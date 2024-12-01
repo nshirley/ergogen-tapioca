@@ -1,0 +1,7 @@
+.DS_Store
+
+# Ignore any output directories
+output__**
+
+# obviously ignore node_modules
+node_modules

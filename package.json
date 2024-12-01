@@ -1,0 +1,16 @@
+{
+  "name": "ergogen-tapioca",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "ergogen . -o output__main",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "nshirley",
+  "license": "ISC",
+  "description": "Simple split ergonomic keyboard built with Ergogen. This is an attempt to use Cherry MX ULP switches.",
+  "devDependencies": {
+    "ergogen": "^4.1.0"
+  }
+}

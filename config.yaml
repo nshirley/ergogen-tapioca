@@ -1,0 +1,161 @@
+units:
+  ulpx: 22
+  ulpy: 22
+
+points:
+  key:
+    padding: cy
+  zones:
+    matrix:
+      anchor:
+        # Shift the PCB slightly to the right and down, otherwise it's weirdly positioned outside of the main sheet in KiCad
+        shift: [100, -150]
+      columns:
+        outer:
+          key:
+            stagger: 2
+            column_net: P19
+        pinky:
+          key:
+            stagger: 2
+            column_net: P18
+        ring:
+          key.origin: [-12, -19]
+          key.stagger: 8
+          key.column_net: P15
+        middle:
+          key.stagger: 5
+          key.column_net: P14
+        index:
+          key.stagger: -5
+          key.column_net: P16
+        inner:
+          key.stagger: -2
+          key.column_net: P10
+      # all rows must be routed on back side to not collide
+      # with columns. Columns are surface mounted.
+      rows:
+        mod:
+          row_net: P3
+        bottom:
+          row_net: P4
+        home:
+          row_net: P5
+        top:
+          row_net: P6
+    thumbfan:
+      anchor:
+        ref: matrix_index_mod
+        shift: [0, -19]
+      columns:
+        inner:
+          key.spread: 21.25
+          key.splay: -7
+          key.origin: [-15, 10]
+          key.column_net: P16
+          
+        home:
+          key.spread: 21.25
+          key.splay: -10
+          key.origin: [-11.75, -9]
+          key.column_net: P10
+      rows:
+        thumb:
+          row_net: P2
+    nano:
+      anchor:
+        ref: matrix_inner_top  # Align with matrix_inner_top as in the footprint
+        shift: [20, -11]
+outlines:
+  nano_outline:
+    - where:
+        ref: nano
+      what: rectangle
+      size: [25, 35]   # Dimensions of the nice_nano footprint with some margin
+      fillet: 1       # Rounded corners
+  left:
+    - where: true
+      what: rectangle
+      size: [ulpx + 4, ulpy + 4]
+      fillet: 1
+  # fills in the edge of the board to thumb cluster
+  fill:
+    - where: 
+        ref: matrix_inner_top
+        shift: [13, -34]
+      what: rectangle
+      size: [44, 94]
+      fillet: 1
+  first_stack:
+    - name: left
+    - operation: add
+      name: nano_outline
+  combined:
+    - name: fill
+    - operation: add
+      name: first_stack
+
+pcbs:
+  left:
+    template: kicad8
+    outlines:
+      main: 
+        outline: combined
+    footprints:
+      # MCU
+      promicro:
+        what: promicro
+        params:
+          orientation: up
+        where:
+          ref: nano
+          shift: [0, 0]
+          rotate: -90
+      jstph:
+        what: jstph
+        where:
+          ref: nano
+          shift: [-5, -20]
+          rotate: -90
+        params:
+          pos: pos
+          neg: GND
+          side: B
+      diode:
+        what: diode
+        where: /^(matrix_|thumbfan_)/
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [0.0, -7.7]
+          # rotate: -180
+      mxulp:
+        where: /^(matrix_|thumbfan_)/
+        what: mx_ulp
+        params:
+          from : "{{column_net}}"
+          to: "{{colrow}}"
+          passthrough: false
+        adjust:
+          # rotate: -180
+      battery_switch:
+        what: slider
+        where:
+          ref: nano
+          shift: [10, 21.5]
+          rotate: 0
+        params:
+          side: B
+          from: pos
+          to: RAW
+      reset:
+        what: EVQPU
+        where:
+          ref: nano
+          shift: [-10, 20.25]
+          rotate: 0
+        params:
+          from: GND
+          to: RST
+          side: B
