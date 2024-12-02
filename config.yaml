@@ -1,6 +1,16 @@
 units:
+  # assuming square... will find out for sure when first prototype PCB arrives
   ulpx: 22
   ulpy: 22
+
+  # Thanks to caldera-keyboard for this pattern
+  pushX: (ulpx / 2)
+  pushY: (ulpy / 2)
+
+  padX: pushX - 2
+  padY: pushY - 2
+
+  pad: 1.5
 
 points:
   key:
@@ -67,6 +77,45 @@ points:
         ref: matrix_inner_top  # Align with matrix_inner_top as in the footprint
         shift: [20, -11]
 outlines:
+  poly:
+    - what: polygon
+      operation: stack
+      fillet: 1.9
+      points:
+        # Almost all points need to reference to points on each key to properly wrap how I want
+        # Top edge
+        # Start at top left
+        - ref: matrix_outer_top
+          shift: [-padX, padY]
+        - ref: matrix_outer_top
+          shift: [padX - pad, padY]
+        - ref: matrix_pinky_top
+          shift: [-padX + pad, padY]
+        - ref: matrix_pinky_top
+          shift: [padX - pad, padY]
+        - ref: matrix_ring_top
+          shift: [-padX + pad, padY]
+        - ref: matrix_ring_top
+          shift: [padX - pad, padY]
+        # - ref: matrix_ring_top
+        #   shift: [pushX - pad, padY]
+        - ref: matrix_middle_top
+          shift: [-padX + pad, padY]
+        - ref: matrix_middle_top
+          shift: [padX - pad, padY]
+        - ref: matrix_index_top
+          shift: [-padX + pad, padY]
+        - ref: matrix_index_top
+          shift: [padX - pad, padY]
+        - ref: matrix_inner_top
+          shift: [-padX + pad, padY]
+
+        # Bottom edge, all need shifted a few mm down to provide space for diodes
+        - ref: matrix_outer_mod
+          shift: [padX - pad, -padY]
+
+        - ref: matrix_outer_mod
+          shift: [-padX, -padY]
   nano_outline:
     - where:
         ref: nano
@@ -100,7 +149,7 @@ pcbs:
     template: kicad8
     outlines:
       main: 
-        outline: combined
+        outline: poly
     footprints:
       # MCU
       promicro:
